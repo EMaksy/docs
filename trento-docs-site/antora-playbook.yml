@@ -8,7 +8,8 @@ content:
     - url: ./../
       start_path: trento-docs-site
       branches:
-        - HEAD
+        - main
+        - suse-stable
 
 ui:
   bundle:
@@ -28,5 +29,4 @@ antora:
 asciidoc:
   attributes:
     page-pagination: ''
-    site-gen-antora: '' 
-    test-variable: ''
+    site-gen-antora: ''

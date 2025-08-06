@@ -1,6 +1,6 @@
 name: ROOT
 title: Trento Documentation
-version: ~
+version: stable
 nav:
 - modules/user-guide/nav_user_guide.adoc
 - modules/developer/nav_developer.adoc
