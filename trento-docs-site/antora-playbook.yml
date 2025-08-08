@@ -28,4 +28,5 @@ antora:
 asciidoc:
   attributes:
     page-pagination: ''
-    site-gen-antora: ''
+    site-gen-antora: '' 
+    test-variable: ''
