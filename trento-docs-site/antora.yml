@@ -1,8 +1,6 @@
 name: ROOT
 title: Trento Documentation
-version: suse
-display_version: 2.5
-prerelease: true
+version: latest
 nav:
 - modules/user-guide/nav_user_guide.adoc
 - modules/developer/nav_developer.adoc
