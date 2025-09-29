@@ -1,7 +1,7 @@
 name: ROOT
 title: Trento Documentation
-version: 2.5
-display_version: 'latest: 2.5'
+version: latest
+display_version: 'latest: 2.6'
 nav:
 - modules/user-guide/nav_user_guide.adoc
 - modules/developer/nav_developer.adoc
