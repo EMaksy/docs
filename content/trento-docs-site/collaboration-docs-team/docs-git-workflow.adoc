@@ -1,147 +1,199 @@
 = Git Workflow for Trento Documentation
 
-== The Two-Branch Model
+This document defines the Git branching strategy for the Trento documentation project.
 
-This workflow is designed for simplicity and safety, using only two permanent branches with clearly defined roles.
+The workflow follows a **Promotion-Based Branching Model (Docs-as-Code)** using two protected, long-lived branches:
+* `main` — for development (pre-release content)
+* `latest` — for the stable, published documentation
 
-`main` (The Development Branch)::
-* *Purpose:* The single source of truth for all new content and future developments. All new work starts here.
-* *Corresponds to:* The `prerelease` version of the documentation.
+All changes are promoted from `main` to `latest` through formal Pull Requests.  
+An optional archiving process preserves historical versions, ensuring a future-proof and traceable documentation lifecycle.
 
-`latest` (The Stable Branch)::
-* *Purpose:* This branch reflects the content of the officially published and supported documentation. It is only updated for new releases or critical hotfixes.
-* *Corresponds to:* The current `released` version.
+== Foundation and Principles
+
+This model is designed for:
+
+* **Clarity:** A simple, two-branch structure (`main` and `latest`) that is easy to understand and communicate.
+* **Safety:** Protected branches and required Pull Requests prevent accidental or unreviewed changes.
+* **Stability:** A dedicated `latest` branch serves as the source for the link:https://documentation.suse.com/sles-sap/trento/html/SLES-SAP-trento/index.html[official documentation^], providing a static and reliable build target.
+
+== Branch Roles and Responsibilities
+
+Two permanent branches define the flow of work:
+
+`main` (Development Branch)::
+*Purpose:* The single source of truth for all new or upcoming content.  
+*Contains:* The *pre-release* version of the documentation.
+
+`latest` (Stable Branch)::
+*Purpose:* Reflects the content of the *currently published and supported* release.  
+*Contains:* The *official* version (e.g., v2.5).
 
 == Branch Protection
 
-To ensure the stability of the official documentation, the `latest` branch and `main` is **protected**. This means no one can push directly to it. Every change—whether a major release or a minor hotfix—**must** be proposed through a Pull Request (PR).
+To maintain stability and consistency:
 
-This rule adds two key benefits:
+* Both `main` and `latest` are **protected branches**.
+* All changes—whether new features, fixes, or releases—must go through Pull Requests.
 
-. *Prevents Accidents:* No one can accidentally push an incorrect or unfinished commit.
-. *Enforces Review:* Every change to the official docs is reviewed by the team, improving quality and catching errors before they are published.
+This policy ensures:
 
-== The Workflow in Detail: Three Clear Use Cases
+. **Accident Prevention:** No one can push unreviewed changes directly to protected branches.
+. **Quality Control:** Every change is reviewed, improving overall documentation quality.
 
-Every task falls into one of the following three processes, which are designed to work with branch protection.
+== Workflows
 
-=== Use Case 1: Developing New Content
+Each documentation task follows one of three main workflows.
 
-This is the standard process for all daily work. It ensures that the `latest` branch remains stable and untouched.
+=== 1. Developing New Content
 
-. *Create a Branch:* Every new task (e.g., a new chapter, a feature description, or a correction) begins on a new, short-lived branch created from `main`.
+The default process for writing or updating documentation.  
+It keeps `latest` stable while new material is developed on `main`.
+
+. **Sync and Branch from `main`**
 +
 [source,bash]
 ----
-# Ensure your local main is up-to-date
 git checkout main
 git pull origin main
-
-# Create a new branch for your task
-git checkout -b feature/new-content
+git checkout -b feature/describe-new-feature
 ----
 
-. *Do the Work:* Make all your changes and commits on this new branch.
+. **Do the Work**  
+Edit, commit, and review changes locally.
 
-. *Integrate:* When the work is complete, merge the branch back into `main` using a Pull Request (PR).
+. **Integrate via Pull Request**
+Push your branch and open a PR targeting `main`.
 
+[IMPORTANT]
 ====
-New content is *always* and *only* integrated into the `main` branch.
+New content is *always merged into `main` only*.  
+The `latest` branch never receives direct feature changes.
 ====
 
-=== Use Case 2: Publishing a New Release
+=== 2. Publishing a New Release
 
-This is a deliberate, formal process to promote `prerelease` content to become the new official version.
+Used to promote the current `main` state into a new stable release on `latest`.
 
-. *Create a Release Preparation Branch:* Start by creating a new branch from the `latest` branch. This branch will be used to stage all the changes for the new release.
+. **Prepare for Release**
 +
+[NOTE]
+====
+Before starting, ensure `main` and `latest` are up-to-date.
 [source,bash]
 ----
-# Ensure your local latest branch is up-to-date
+git checkout main
+git pull origin main
 git checkout latest
 git pull origin latest
-
-# Create a new branch for the release
-git checkout -b release/prepare-v*
+git checkout -b release/prepare-v2.6
 ----
+====
 
-. *Merge `main` and Resolve Conflicts:* On your new `release/*` branch, merge `main`. This will pull in all the new documentation.
+. **Merge `main` and Resolve Conflicts**
 +
 [source,bash]
 ----
 git merge main
 ----
-+
-IMPORTANT: This merge will cause a predictable conflict in the `antora.yml` file. This is expected. Resolve it by keeping the content from the `latest` side of the conflict, then commit the merge.
+Conflicts, especially in `antora.yml`, are expected.  
+Resolve them by keeping the structure from `latest`, then commit:
 +
 [source,bash]
 ----
-# Manually edit antora.yml to fix the conflict markers
 git add antora.yml
 git commit
 ----
 
-. *Update the Version:* On the same branch, make a final commit to update the version number in `antora.yml` (e.g., update `2.5` to `2.6`).
+. **Update Version Metadata**
+Edit `antora.yml` to reflect the new version (e.g., change from `2.5` → `2.6`) and commit the change.
 
-. *Create a Pull Request:* Push your `release/prepare-v2.6` branch and open a Pull Request on GitHub targeting the `latest` branch.
-
-. *Review and Merge:* The team reviews the PR, which contains a complete summary of the new release. After approval, the PR is merged, and the `latest` branch is officially updated.
-
-====
-Content flows from `main` into `latest` via a reviewed Pull Request.
-====
-
-=== Use Case 3: Applying a Critical Hotfix
-
-This process is for urgent corrections to the already published documentation. It uses `cherry-pick` in a controlled and safe manner.
-
-. *Create the Fix in `main` (The Golden Rule):* The fix is *always* created and merged into the `main` branch first. This prevents future conflicts.
-.. Create a `fix/*` branch from `main`.
-.. Make the correction and commit it. The commit should be small and contain only the fix.
-.. Merge the `fix/*` branch back into `main` via a Pull Request.
-
-. *Apply the Fix to `latest` via Pull Request:* After the fix is in `main`, port the specific commit over to the `latest` branch using a PR.
+. **Open the Release PR**
 +
 [source,bash]
 ----
-# Switch to the latest branch and ensure it's up-to-date
+git push origin release/prepare-v2.6
+----
+Create a Pull Request targeting `latest`.  
+After review and approval, merge the PR.  
+The `latest` branch now represents version 2.6.
+
+[IMPORTANT]
+====
+Content flows from `main` → `latest` only through reviewed Pull Requests.
+====
+
+**Trigger the Documentation Build**
+Rebuild manually or wait for the scheduled workflow to publish updates:
+link:https://www.trento-project.io/docs/[www.trento-project.io/docs^]
+
+=== 3. Applying a Critical Hotfix
+
+Used for urgent corrections to published (stable) documentation.
+
+. **Always Fix `main` First**
++
+[source,bash]
+----
+git checkout main
+git pull origin main
+git checkout -b fix/typo-in-command
+----
+Commit and PR your fix into `main`.
+
+. **Backport the Fix to `latest`**
+Find the commit hash from `main`, then:
++
+[source,bash]
+----
 git checkout latest
 git pull origin latest
+git checkout -b hotfix/backport-typo
+git cherry-pick <commit-hash>
+git push origin hotfix/backport-typo
+----
+Open a PR targeting `latest`.
 
-# Create a hotfix branch from latest
-git checkout -b hotfix/backport-urgent-typo
+[IMPORTANT]
+====
+Hotfixes are *first merged into `main`* and then *cherry-picked* into `latest`.  
+This guarantees consistency between development and release branches.
+====
 
-# Apply the specific commit from main
-# Find the <commit-hash> from the git history of the main branch
-git cherry-pick <commit-hash-of-the-fix>
+== Optional: Archiving Old Versions
 
-# Push the branch and create a PR against 'latest'
-git push origin hotfix/backport-urgent-typo
+To keep historical documentation versions visible in Antora, add an **archiving step** before creating a new release.
+
+. **Archive the Current `latest`**
++
+[source,bash]
+----
+git checkout latest
+git pull origin latest
+git checkout -b v2.5
+git push origin v2.5
 ----
 
-====
-A hotfix is always implemented in `main` and then ported to `latest` via `cherry-pick` and a Pull Request.
-====
+. **Update the Antora Playbook**
+Include the new version branch in your `antora-playbook.yml`:
++
+[source,yaml]
+----
+content:
+  sources:
+    - url: .
+      branches: [main, latest, v2.5]
+----
 
-== A Note on `git cherry-pick`
+Archived branches (e.g., `v2.5`, `v2.6`) will then appear as selectable versions in the documentation site’s UI.
 
-It is critical to understand how `cherry-pick` works to use it safely.
+== Summary
 
-What it does::
-`cherry-pick` copies the changes from a commit and creates a *brand new commit* on the target branch. The original and the copied commit have different IDs, even though they contain the same content change.
+This workflow provides:
 
-The risk::
-If changes are copied back and forth without a clear process, Git can "forget" the relationship between the changes. This can create "time bombs" that lead to unexpected and difficult merge conflicts later.
+* A **promotion-based flow** from `main` → `latest`
+* **Full traceability** through Pull Requests
+* **Safe hotfixing** via cherry-picks
+* **Optional version archiving** for long-term documentation history
 
-Why our workflow is safe::
-By following the strict rule of **"Fix always in `main` first, then port to `latest`"**, we defuse this risk. When you perform the next major release merge, Git is smart enough to see that the content change from the hotfix already exists in both histories and won't try to apply it again.
-
-== Workflow Summary
-
-[options="header"]
-|===
-| Action | How the Process Starts | Target Branch | Method
-| *New Content* | Branch from `main` | `main` | Merge via Pull Request
-| *New Release* | Branch from `latest` to create a release branch | `latest` | On the release branch, merge content from `main`. Then merge the release branch into `latest` via Pull Request.
-| *Hotfix* | Branch from `latest` to create a hotfix branch | `latest` | On the hotfix branch, `cherry-pick` a commit from `main`. Then merge the hotfix branch into `latest` via Pull Request.
-|===
+Use this process to maintain consistency, stability, and transparency in Trento’s documentation lifecycle.
