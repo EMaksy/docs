@@ -41,7 +41,8 @@
 *** xref:trento-docs-site/contribution-upstream/components-nav-guide.adoc[Component Documentation Navigation Guide]
 *** xref:trento-docs-site/collaboration-docs-team/docs-git-workflow.adoc[Git Workflow for Trento Documentation]
 *** xref:trento-docs-site-ui/README.adoc[Documentation Page UI]
-*** xref:trento-docs-site-ui/new-feature.adoc[New feature]
+
+
 
 
 include::partial$nav_components.adoc[]
