@@ -43,5 +43,4 @@
 *** xref:trento-docs-site-ui/README.adoc[Documentation Page UI]
 *** xref:trento-docs-site-ui/new-feature.adoc[New feature]
 
-
 include::partial$nav_components.adoc[]
