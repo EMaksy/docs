@@ -98,7 +98,7 @@ git checkout -b release/prepare-v2.6
 +
 [source,bash]
 ----
-git merge main
+git merge --no-ff main
 ----
 Conflicts, especially in `antora.yml`, are expected.  
 Resolve them by keeping the structure from `latest`, then commit:
