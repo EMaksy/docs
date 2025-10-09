@@ -15,6 +15,7 @@ ext:
     ## Fetch documentation from different trento upstream repositories
     - run:
         ## Content of the auto builded components section part of nav_developer.adoc
+        - command: git clone --depth 1 --branch  latest https://github.com/EMaksy/docs-content  trento-docs-site/build/docs-content
         - command: git clone --depth 1 --single-branch https://github.com/trento-project/agent trento-docs-site/build/tmp_components/agent
         - command: git clone --depth 1 --single-branch https://github.com/trento-project/ansible trento-docs-site/build/tmp_components/ansible
         - command: git clone --depth 1 --single-branch https://github.com/trento-project/checks trento-docs-site/build/tmp_components/checks
@@ -38,10 +39,10 @@ ext:
         files: 'nav_components.adoc'
         into: modules/developer/partials
     # Trento user facing documentation from Trento docs repo https://github.com/trento-project/docs
-      - dir: trento/adoc
+      - dir: trento-docs-site/build/docs-content/trento/adoc
         files: '**/*.adoc'
         into: modules/user-guide/pages
-      - dir: trento/images/src/png
+      - dir: trento-docs-site/build/docs-content/trento/images/src/png
         files: '**/*.png'
         into: modules/user-guide/images
     - run:
@@ -53,10 +54,10 @@ ext:
       - dir: ./..
         files: 'README.adoc'
         into: modules/developer/pages
-      - dir: content
+      - dir: trento-docs-site/build/docs-content/content
         files: '**/*.adoc'
         into: modules/developer/pages/
-      - dir: content/images
+      - dir: trento-docs-site/build/docs-content/content/images
         files: '**/*.{png,jpg,jpeg,svg,gif}'
         into: modules/developer/images/images
     ## Trento upstream projects documentation
