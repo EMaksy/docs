@@ -46,7 +46,7 @@ ext:
         files: '**/*.png'
         into: modules/user-guide/images
     - run:
-        command: trento-docs-site/scripts/generate-attributes-yaml.sh trento/adoc/generic-attributes.adoc ./trento-docs-site/build/adoc_variables/user-guide/antora.yml
+        command: trento-docs-site/scripts/generate-attributes-yaml.sh ./trento-docs-site/build/docs-content/trento/adoc/generic-attributes.adoc ./trento-docs-site/build/adoc_variables/user-guide/antora.yml
     - scan:
         dir: trento-docs-site/build/adoc_variables/user-guide/
         files: 'antora.yml'
