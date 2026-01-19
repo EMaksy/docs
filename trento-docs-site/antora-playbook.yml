@@ -20,6 +20,7 @@ output:
 antora:
   extensions:
   - '@antora/collector-extension'
+  - require: ./extensions/collector-edit-url.cjs
   - require: '@antora/lunr-extension'
     index_latest_only: true
 
